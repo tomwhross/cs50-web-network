@@ -1,0 +1,15 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    <h2>All Posts</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    {% for post in posts %}
+        <div>{{ post.message }} by {{ post.user.username }} on {{ post.created_on }} with {{ post.like_count }} likes</div>
+    {% endfor %}
+
+{% endblock %}

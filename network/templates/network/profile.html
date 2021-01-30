@@ -1,0 +1,16 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+    <h2>User Pofile</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+     
+    <div>
+        {{ user.username }}    
+     </div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <h2>Post</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <div class="container border border-secondary rounded-sm">
+        <div class="row">
+            <div class="col-sm" style="margin: 20px;">
+                <div id="post-view">
+                    <form id="post-form" action="{% url 'post' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <textarea autofocus class="form-control" id="post-message" name="post-message" required="required" maxlength="240" placeholder="Post"></textarea>
+                        </div>
+                        <span class="align-bottom">
+                            <div class="row algin-bottom">
+                                <div class="col">
+                                    <input type="submit" class="btn btn-primary" value="Post"/>
+                                </div>
+                                <div class="col" id="post-chars-remaining-message" align="right">
+                                    <b>240</b> characters remaining
+                                </div>
+                            </div>
+                        </span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% comment %} Don't have an account? <a href="{% url 'register' %}">Register here.</a> {% endcomment %}
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/post.js' %}"></script>
+{% endblock %}

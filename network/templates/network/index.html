@@ -1,5 +1,47 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+
+    <h2>All Posts</h2>
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+     
+        {% for post in posts %}
+            <div class="container border border-secondary rounded-sm post-container">
+                <div class="row post-row">
+                    <p><b>{{ listing.title }}</b></a></p>
+                    <h3><a href="{% url 'get_user' post.user.id %}">{{ post.user.username }}</a></h3>
+                </div>
+                <div class="row post-row">
+                    <div>{{ post.message }}</div>
+                </div>
+                <div class="row post-row">
+                    <div>{{ post.created_on }}</div>
+                </div>
+                <div class="row post-row">
+                    <div style="display: inline;">
+                         {% if user.is_authenticated %}
+                            {% if user in post.likes.all %}
+                                <i data-id="{{ post.id }}" class="fas fa-heart" style="color: red;"></i>
+                            {% else %}
+                                <i data-id="{{ post.id }}" class="far fa-heart" style="color: red;"></i>
+                            {% endif %}
+                         {% endif %}
+                        <div class="like-count" data-id="{{ post.id }}" style="display: inline;">{{ post.like_count }}</div>
+                    </div>
+                </div>
+                    {% comment %} {{ post.message }} by {{ post.user.username }} on {{ post.created_on }} with {{ post.like_count }} likes {% endcomment %}
+                {% comment %} </div> {% endcomment %}
+            </div>
+        {% endfor %}
+     </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/like.js' %}"></script>
 {% endblock %}
