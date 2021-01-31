@@ -32,9 +32,9 @@ class Post(models.Model):
 
 class Follower(models.Model):
     user = models.ForeignKey(
-        "User", on_delete=models.CASCADE, related_name="user_follower"
+        "User", on_delete=models.CASCADE, related_name="followed_user"
     )
-    followers = models.ManyToManyField("User", blank=True, related_name="followers")
+    followers = models.ManyToManyField("User", blank=True, related_name="following")
     # follower = models.ForeignKey(
     #     "User", on_delete=models.CASCADE, related_name="followers"
     # )

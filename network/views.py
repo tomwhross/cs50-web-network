@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Post, User
+from .models import Follower, Post, User
 
 
 def index(request):
@@ -104,6 +104,40 @@ def post(request):
 
 
 def get_user(request, user_id):
-    user = User.objects.get(id=user_id)
+    user_profile = User.objects.get(id=user_id)
 
-    return render(request, "network/profile.html", {"user": user})
+    follow = Follower.objects.get(user=user_profile)
+    following = request.user in follow.followers.all()
+
+    return render(
+        request, "network/profile.html", {"user": user_profile, "following": following}
+    )
+
+
+def follow_user(request, user_id):
+    if request.method == "POST":
+        # import pdb
+
+        # pdb.set_trace()
+        user = User.objects.get(id=user_id)
+
+        follower, _ = Follower.objects.get_or_create(user=user)
+
+        if request.user not in follower.followers.all():
+            follower.followers.add(request.user)
+            follower.save()
+
+            return JsonResponse(
+                {"followed": True, "user_id": user.id, "follower": request.user.id},
+                status=200,
+            )
+
+        follower.followers.remove(request.user)
+        follower.save()
+
+        return JsonResponse(
+            {"followed": False, "user": user.id, "follower": request.user.id},
+            status=200,
+        )
+
+    return JsonResponse({"message": "Can only post to method"}, status=400)
