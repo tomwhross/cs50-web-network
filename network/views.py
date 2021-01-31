@@ -11,12 +11,18 @@ from .models import Follower, Post, User
 
 def index(request):
     posts = Post.objects.all()
-    # likes = posts.likes.all()
-    # import pdb
-
-    # pdb.set_trace()
 
     return render(request, "network/index.html", {"posts": posts})
+
+
+@login_required
+def get_following_posts(request):
+    user = User.objects.get(id=request.user.id)
+    following = user.following.all()
+    bleh = [follow.user for follow in following]
+    posts = Post.objects.filter(user__in=bleh)
+
+    return render(request, "network/following.html", {"posts": posts})
 
 
 def login_view(request):
@@ -73,7 +79,6 @@ def register(request):
         return render(request, "network/register.html")
 
 
-# @csrf_exempt
 @login_required
 def like_post(request, post_id):
     if request.method == "POST":
@@ -92,22 +97,48 @@ def like_post(request, post_id):
 
 
 @login_required
-def post(request):
+def post(request, post_id=None):
     if request.method == "POST":
+        if not request.POST["post_id"]:
+            user = User.objects.get(id=request.user.id)
+            user_post = Post.objects.create(
+                user=user, message=request.POST["post-message"]
+            )
+            user_post.save()
+
+            return HttpResponseRedirect(reverse("index"))
+
         user = User.objects.get(id=request.user.id)
-        user_post = Post.objects.create(user=user, message=request.POST["post-message"])
+        user_post = Post.objects.get(id=int(request.POST["post_id"]))
+        user_post.message = request.POST["post-message"]
         user_post.save()
 
-        return render(request, "network/post.html")
+        return HttpResponseRedirect(reverse("index"))
 
-    return HttpResponseRedirect(reverse("index"))
+    if post_id:
+        post = Post.objects.get(id=post_id)
+
+        if request.user.id != post.user.id:
+            return HttpResponseRedirect(reverse("index"))
+
+        return render(
+            request,
+            "network/post.html",
+            {"post_id": post.id, "post_message": post.message},
+        )
+
+    return render(request, "network/post.html")
 
 
 def get_user(request, user_id):
     user_profile = User.objects.get(id=user_id)
 
-    follow = Follower.objects.get(user=user_profile)
-    following = request.user in follow.followers.all()
+    followed_user, _ = Follower.objects.get_or_create(user=user_profile)
+    following = request.user in followed_user.followers.all()
+
+    # import pdb
+
+    # pdb.set_trace()
 
     return render(
         request, "network/profile.html", {"user": user_profile, "following": following}

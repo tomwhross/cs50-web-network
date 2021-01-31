@@ -15,9 +15,9 @@
      </div>
     <div>
         {% if following %}
-            <a data-userid="{{ user.id }}" id="follow-user" href="#">Follow user</a>
-        {% else %}
             <a data-userid="{{ user.id }}" id="follow-user" href="#">Unfollow user</a>
+        {% else %}
+            <a data-userid="{{ user.id }}" id="follow-user" href="#">Follow user</a>
         {% endif %}
     </div>
 
