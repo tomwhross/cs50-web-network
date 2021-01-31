@@ -17,16 +17,12 @@
         <div class="row">
             <div class="col-sm" style="margin: 20px;">
                 <div id="post-view">
-                    {% if post_id %}
                     <form id="post-form" action="{% url 'post' %}" method="post">
-                    {% else %}
-                    <form id="post-form" action="{% url 'post' %}" method="post">
-                    {% endif %} 
                         {% csrf_token %}
                         <div class="form-group">
                             <textarea autofocus class="form-control" id="post-message" name="post-message" required="required" maxlength="240" placeholder="Post">{% if post_message %}{{ post_message }}{% endif %}</textarea>
                             {% if post_id %}
-                            <input type="hidden" id="post_id" name="post_id" value="{{ post_id }}">
+                                <input type="hidden" id="post_id" name="post_id" value="{{ post_id }}">
                             {% endif %}
                         </div>
                         <span class="align-bottom">
