@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken') 
+            'X-CSRFToken': get_cookie('csrftoken') 
         },
       })
       .then(response => response.json())
@@ -32,12 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
   
-function like_post() {
-  console.log("Like post");
-  console.log(dataset.id);
-}
 
-function getCookie(name) {
+function get_cookie(name) {
   if (!document.cookie) {
     return null;
   }

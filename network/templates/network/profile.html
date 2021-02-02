@@ -9,20 +9,65 @@
         <div>{{ message }}</div>
     {% endif %}
 
-     
-    <div>
-        {{ user.username }}    
-     </div>
-    <div>
-        {% if following %}
-            <a data-userid="{{ user.id }}" id="follow-user" href="#">Unfollow user</a>
-        {% else %}
-            <a data-userid="{{ user.id }}" id="follow-user" href="#">Follow user</a>
-        {% endif %}
+
+    <div class="container border border-secondary rounded-sm post-container">
+        <div class="row post-row">
+            {{ user.username }}
+        </div>
+        <div class="row post-row">
+            Followers: <span id="number_of_followers">{{ number_of_followers }}</span>
+        </div>
+        <div class="row post-row">
+            Following: {{ number_of_users_followed }}
+        </div>
+        <div class="row post-row">
+            {% if request.user.id != user.id %}
+                {% if following %}
+                <a data-userid="{{ user.id }}" id="follow-user" href="#">Unfollow user</a>
+                {% else %}
+                    <a data-userid="{{ user.id }}" id="follow-user" href="#">Follow user</a>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
+
+    <div>
+        <hr>
+    </div>
+    <div>
+        {% for post in posts %}
+            <div class="container border border-secondary rounded-sm post-container">
+                <div class="row post-row">
+                    <p><b>{{ listing.title }}</b></a></p>
+                    <h3><a href="{% url 'get_user' post.user.id %}">{{ post.user.username }}</a></h3>
+                </div>
+                <div class="row post-row">
+                    <div>{{ post.message }}</div>
+                </div>
+                <div class="row post-row">
+                    <div>{{ post.created_on }}</div>
+                </div>
+                <div class="row post-row">
+                    <div style="display: inline;">
+                         {% if request.user.is_authenticated %}
+                            {% if request.user in post.likes.all %}
+                                <i data-id="{{ post.id }}" class="fas fa-heart" style="color: red;"></i>
+                            {% else %}
+                                <i data-id="{{ post.id }}" class="far fa-heart" style="color: red;"></i>
+                            {% endif %}
+                         {% endif %}
+                        <div class="like-count" data-id="{{ post.id }}" style="display: inline;">{{ post.like_count }}</div>
+                    </div>
+                </div>
+                    {% comment %} {{ post.message }} by {{ post.user.username }} on {{ post.created_on }} with {{ post.like_count }} likes {% endcomment %}
+                {% comment %} </div> {% endcomment %}
+            </div>
+        {% endfor %}
+     </div>
 
 {% endblock %}
 
 {% block script %}
     <script src="{% static 'network/follow.js' %}"></script>
+    <script src="{% static 'network/like.js' %}"></script>
 {% endblock %}

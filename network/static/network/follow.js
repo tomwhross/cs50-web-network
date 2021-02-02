@@ -18,12 +18,16 @@ document.addEventListener('DOMContentLoaded', function() {
       if (result.followed === true) {
         console.log(`followed: ${result.followed}`);
         follow_button.innerHTML = 'Unfollow user';
-        console.log(follow_button);
+        number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
+        number_of_followers = number_of_followers + 1;
+        document.querySelector('#number_of_followers').innerHTML = number_of_followers;
       }
       else {
         console.log(`followed: ${result.followed}`);
         follow_button.innerHTML = 'Follow user';
-        console.log(follow_button);
+        number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
+        number_of_followers = number_of_followers - 1;
+        document.querySelector('#number_of_followers').innerHTML = number_of_followers; 
       }
     });
   });

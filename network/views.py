@@ -10,7 +10,7 @@ from .models import Follower, Post, User
 
 
 def index(request):
-    posts = Post.objects.all()
+    posts = Post.objects.all().order_by("-created_on")
 
     return render(request, "network/index.html", {"posts": posts})
 
@@ -19,8 +19,8 @@ def index(request):
 def get_following_posts(request):
     user = User.objects.get(id=request.user.id)
     following = user.following.all()
-    bleh = [follow.user for follow in following]
-    posts = Post.objects.filter(user__in=bleh)
+    following_users = [follow.user for follow in following]
+    posts = Post.objects.filter(user__in=following_users).order_by("-created_on")
 
     return render(request, "network/following.html", {"posts": posts})
 
@@ -136,12 +136,25 @@ def get_user(request, user_id):
     followed_user, _ = Follower.objects.get_or_create(user=user_profile)
     following = request.user in followed_user.followers.all()
 
+    numbers_of_followers = followed_user.followers.count()
+    number_of_users_followed = user_profile.following.count()
+
+    user_posts = Post.objects.filter(user=user_profile).order_by("-created_on")
+
     # import pdb
 
     # pdb.set_trace()
 
     return render(
-        request, "network/profile.html", {"user": user_profile, "following": following}
+        request,
+        "network/profile.html",
+        {
+            "user": user_profile,
+            "following": following,
+            "number_of_followers": numbers_of_followers,
+            "number_of_users_followed": number_of_users_followed,
+            "posts": user_posts,
+        },
     )
 
 
@@ -151,6 +164,9 @@ def follow_user(request, user_id):
 
         # pdb.set_trace()
         user = User.objects.get(id=user_id)
+
+        if request.user == user:
+            return JsonResponse({"message": "Can not follow yourself"}, status=400)
 
         follower, _ = Follower.objects.get_or_create(user=user)
 
