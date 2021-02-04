@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -98,8 +100,11 @@ def like_post(request, post_id):
 
 @login_required
 def post(request, post_id=None):
+    # import pdb
+
+    # pdb.set_trace()
     if request.method == "POST":
-        if not request.POST["post_id"]:
+        if not post_id:
             user = User.objects.get(id=request.user.id)
             user_post = Post.objects.create(
                 user=user, message=request.POST["post-message"]
@@ -108,24 +113,31 @@ def post(request, post_id=None):
 
             return HttpResponseRedirect(reverse("index"))
 
-        user = User.objects.get(id=request.user.id)
-        user_post = Post.objects.get(id=int(request.POST["post_id"]))
-        user_post.message = request.POST["post-message"]
-        user_post.save()
+        # user = User.objects.get(id=request.user.id)
+        # user_post = Post.objects.get(id=int(request.POST["post_id"]))
+        # user_post.message = request.POST["post-message"]
+        # user_post.save()
 
-        return HttpResponseRedirect(reverse("index"))
+        # return HttpResponseRedirect(reverse("index"))
 
-    if post_id:
         post = Post.objects.get(id=post_id)
 
         if request.user.id != post.user.id:
             return HttpResponseRedirect(reverse("index"))
 
-        return render(
-            request,
-            "network/post.html",
-            {"post_id": post.id, "post_message": post.message},
-        )
+        data = json.loads(request.body)
+        if data.get("message") is not None:
+            post.message = data.get("message")
+            post.save()
+
+            # return render(
+            #     request,
+            #     "network/post.html",
+            #     {"post_id": post.id, "post_message": post.message},
+            # )
+            return JsonResponse({"saved": True}, status=200)
+
+        return JsonResponse({"message": "Post required for editing"}, status=400)
 
     return render(request, "network/post.html")
 

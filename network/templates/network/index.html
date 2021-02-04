@@ -11,18 +11,18 @@
 
      
         {% for post in posts %}
-            <div class="container border border-secondary rounded-sm post-container">
+            <div class="container border border-secondary rounded-sm post-container" data-post_container_id="{{ post.id }}">
                 <div class="row post-row">
-                    <p><b>{{ listing.title }}</b></a></p>
                     <h3><a href="{% url 'get_user' post.user.id %}">{{ post.user.username }}</a></h3>
                 </div>
                 <div class="row post-row">
-                    <div>{{ post.message }}</div>
+                    <div data-message="{{ post.id }}">{{ post.message }}</div>
                 </div>
                 <div class="row post-row">
                     <div>{{ post.created_on }} 
                         {% if post.user.id == request.user.id %}
-                            <a href="{% url 'post' post.id %}">Edit</a>
+                            {% comment %} <a href="{% url 'post' post.id %}">Edit</a> {% endcomment %}
+                            <a class="edit_post" id="edit_post_{{ post.id }}" data-editid="{{ post.id }}" href="#edit_post_{{ post.id }}">Edit</a>
                         {% endif %}
                     </div>
                 </div>
@@ -39,6 +39,15 @@
                     </div>
                 </div>
             </div>
+            <div class="container border border-secondary rounded-sm post-container" data-edit_container_id="{{ post.id }}" style="display: none;">
+                <div>
+                    <textarea id="text_{{ post.id }}">{{ post.message }}</textarea>
+                </div>
+                <div>
+                    <button data-cancelid="{{ post.id }}" id="cancel-button_{{ post.id }}" type="button" class="btn btn-primary cancel-button">Cancel</button>
+                    <button data-saveid="{{ post.id }}" id="save-button_{{ post.id }}" type="button" class="btn btn-primary save-button">Save</button> 
+                </div>
+            </div>
         {% endfor %}
      </div>
 
@@ -46,4 +55,5 @@
 
 {% block script %}
     <script src="{% static 'network/like.js' %}"></script>
+    <script src="{% static 'network/edit.js' %}"></script>
 {% endblock %}
