@@ -21,11 +21,13 @@
             Following: {{ number_of_users_followed }}
         </div>
         <div class="row post-row">
-            {% if request.user.id != user.id %}
-                {% if following %}
-                <a data-userid="{{ user.id }}" id="follow-user" href="#">Unfollow user</a>
-                {% else %}
-                    <a data-userid="{{ user.id }}" id="follow-user" href="#">Follow user</a>
+            {% if request.user.is_authenticated %}
+                {% if request.user.id != user.id %}
+                    {% if following %}
+                    <a data-userid="{{ user.id }}" id="follow-user" href="#">Unfollow user</a>
+                    {% else %}
+                        <a data-userid="{{ user.id }}" id="follow-user" href="#">Follow user</a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>

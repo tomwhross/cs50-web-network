@@ -8,9 +8,20 @@ document.addEventListener('DOMContentLoaded', function() {
             post_id = this.dataset.editid;
             post_container = document.querySelector(`div[data-post_container_id="${post_id}"]`);
             edit_container = document.querySelector(`div[data-edit_container_id="${post_id}"]`);
+            
+            original_post_message = document.querySelector(`div[data-message="${post_id}"]`).innerHTML;
+            edit_post_message = document.querySelector(`#text_${[post_id]}`);
+            edit_post_message.value = original_post_message;
              
             post_container.style.display = 'none';
             edit_container.style.display = 'block';
+
+            characters_remaining = document.querySelector(`#post-chars-remaining-message_${post_id}`);
+
+            characters_remaining.innerHTML = `<b>${240 - edit_post_message.value.length}</b> characters remaining`;
+            edit_post_message.onkeyup = function () {
+                characters_remaining.innerHTML = `<b>${240 - edit_post_message.value.length}</b> characters remaining`;
+            }
         });
     });
 
@@ -29,16 +40,16 @@ document.addEventListener('DOMContentLoaded', function() {
     save_buttons.forEach(function(save_button) {
         save_button.addEventListener('click', function() {
             post_id = this.dataset.saveid;
-
-            text = document.querySelector(`#text_${post_id}`).value; 
+            
+            post_box = document.querySelector(`#text_${post_id}`);
+            
+            text = post_box.value; 
 
             post_container = document.querySelector(`div[data-post_container_id="${post_id}"]`);
             edit_container = document.querySelector(`div[data-edit_container_id="${post_id}"]`);
 
             post = document.querySelector(`div[data-message="${post_id}"]`);
            
-            // message = {'message': text};
-
             fetch(`/post/${post_id}`, {
                 credentials: 'include',
                 method: 'POST',
@@ -52,16 +63,23 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(result => {
-                console.log(result);
+                if (result.message != undefined && result.message.length > 0) {
+                    message_container = document.getElementById('result-message');
+                    message_container.innerHTML = result.message;
+                }
+                else {
+                    message_container = document.getElementById('result-message');
+                    message_container.innerHTML = '';
+                    post.innerHTML = text;
+                    post_container.style.display = 'block';
+                    edit_container.style.display = 'none';
+                }
             });
-
-            post.innerHTML = text;
-            post_container.style.display = 'block';
-            edit_container.style.display = 'none';
         });
     });
 });
 
+// from https://docs.djangoproject.com/en/3.0/ref/csrf/#ajax
 function getCookie(name) {
     if (!document.cookie) {
       return null;

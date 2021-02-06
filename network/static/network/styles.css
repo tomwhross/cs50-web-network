@@ -3,10 +3,10 @@
 } */
 
 textarea {
-    min-height: 110px;
-    max-height: 210px;
-    max-width: 60vw;
-    min-width: 40vw;
+    min-height: 150px;
+    max-height: 150px;
+    max-width: 48vw;
+    min-width: 48vw;
 }
 
 #post-view

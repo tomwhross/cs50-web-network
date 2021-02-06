@@ -2,19 +2,38 @@ import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 
-from .models import Follower, Post, User
+from .models import Following, Post, User
 
 
 def index(request):
-    posts = Post.objects.all().order_by("-created_on")
+    postsposts = Post.objects.all().order_by("-created_on")
 
-    return render(request, "network/index.html", {"posts": posts})
+    paginator = Paginator(postsposts, 10)  # show 25 posts per page.
+
+    # import pdb
+
+    # pdb.set_trace()
+
+    page_number = request.GET.get("page", 1)
+    posts = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "network/index.html",
+        {
+            "posts": posts,
+            "num_page_range": range(posts.paginator.num_pages),
+            "current_page": page_number,
+        },
+    )
+
+    # return render(request, "network/index.html", {"posts": posts})
 
 
 @login_required
@@ -100,9 +119,6 @@ def like_post(request, post_id):
 
 @login_required
 def post(request, post_id=None):
-    # import pdb
-
-    # pdb.set_trace()
     if request.method == "POST":
         if not post_id:
             user = User.objects.get(id=request.user.id)
@@ -113,31 +129,24 @@ def post(request, post_id=None):
 
             return HttpResponseRedirect(reverse("index"))
 
-        # user = User.objects.get(id=request.user.id)
-        # user_post = Post.objects.get(id=int(request.POST["post_id"]))
-        # user_post.message = request.POST["post-message"]
-        # user_post.save()
-
-        # return HttpResponseRedirect(reverse("index"))
-
         post = Post.objects.get(id=post_id)
 
         if request.user.id != post.user.id:
             return HttpResponseRedirect(reverse("index"))
 
         data = json.loads(request.body)
-        if data.get("message") is not None:
-            post.message = data.get("message")
-            post.save()
+        if len(data.get("message", "")) <= 0:
+            return JsonResponse({"message": "Posts cannot be empty"}, status=406)
 
-            # return render(
-            #     request,
-            #     "network/post.html",
-            #     {"post_id": post.id, "post_message": post.message},
-            # )
-            return JsonResponse({"saved": True}, status=200)
+        if len(data.get("message")) > 240:
+            return JsonResponse(
+                {"message": "Posts cannot be over 240 characters"}, status=406
+            )
 
-        return JsonResponse({"message": "Post required for editing"}, status=400)
+        post.message = data.get("message")
+        post.save()
+
+        return JsonResponse({"saved": True}, status=200)
 
     return render(request, "network/post.html")
 
@@ -145,24 +154,20 @@ def post(request, post_id=None):
 def get_user(request, user_id):
     user_profile = User.objects.get(id=user_id)
 
-    followed_user, _ = Follower.objects.get_or_create(user=user_profile)
-    following = request.user in followed_user.followers.all()
+    followed_user, _ = Following.objects.get_or_create(user=user_profile)
+    is_following = request.user in followed_user.followers.all()
 
     numbers_of_followers = followed_user.followers.count()
     number_of_users_followed = user_profile.following.count()
 
     user_posts = Post.objects.filter(user=user_profile).order_by("-created_on")
 
-    # import pdb
-
-    # pdb.set_trace()
-
     return render(
         request,
         "network/profile.html",
         {
             "user": user_profile,
-            "following": following,
+            "following": is_following,
             "number_of_followers": numbers_of_followers,
             "number_of_users_followed": number_of_users_followed,
             "posts": user_posts,
@@ -172,27 +177,25 @@ def get_user(request, user_id):
 
 def follow_user(request, user_id):
     if request.method == "POST":
-        # import pdb
 
-        # pdb.set_trace()
         user = User.objects.get(id=user_id)
 
         if request.user == user:
             return JsonResponse({"message": "Can not follow yourself"}, status=400)
 
-        follower, _ = Follower.objects.get_or_create(user=user)
+        user_following, _ = Following.objects.get_or_create(user=user)
 
-        if request.user not in follower.followers.all():
-            follower.followers.add(request.user)
-            follower.save()
+        if request.user not in user_following.followers.all():
+            user_following.followers.add(request.user)
+            user_following.save()
 
             return JsonResponse(
                 {"followed": True, "user_id": user.id, "follower": request.user.id},
                 status=200,
             )
 
-        follower.followers.remove(request.user)
-        follower.save()
+        user_following.followers.remove(request.user)
+        user_following.save()
 
         return JsonResponse(
             {"followed": False, "user": user.id, "follower": request.user.id},
