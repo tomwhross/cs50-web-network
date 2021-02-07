@@ -21,7 +21,7 @@
             <div class="row post-row">
                 <div style="display: inline;">
                     {% if request.user.is_authenticated %}
-                        {% if user in post.likes.all %}
+                        {% if request.user in post.likes.all %}
                             <i data-id="{{ post.id }}" class="fas fa-heart" style="color: red;"></i>
                         {% else %}
                             <i data-id="{{ post.id }}" class="far fa-heart" style="color: red;"></i>
@@ -56,15 +56,17 @@
                         <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">previous</a></li>
                     {% endif %}
 
-                    {% for page in num_page_range %}
-                        {% if forloop.counter|slugify == current_page|slugify %}
-                            <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}
-                                <span class="sr-only">(current)</span>
-                            </a></li>
-                        {% else %}
-                            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
-                        {% endif %}
-                    {% endfor %}
+                    {% if posts.has_previous or posts.has_next %}
+                        {% for page in num_page_range %}
+                            {% if forloop.counter|slugify == current_page|slugify %}
+                                <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}
+                                    <span class="sr-only">(current)</span>
+                                </a></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
 
                     {% if posts.has_next %}
                         <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">next</a></li>
@@ -78,9 +80,14 @@
     <div class="container border border-secondary rounded-sm post-container">
         <div class="row post-row">
             {% if "following" in request.path %}
-                Follow some users!
+                <p>You are not following any users with posts. Click <a href="{% url 'index' %}">here</a>
+                to see all posts, then click a username to follow a user</p>
             {% else %}
-                This user has no posts
+                {% if user.username == request.user.username %}
+                    You have no posts
+                {% else %}
+                    This user has no posts
+                {% endif %}
             {% endif %}
         </div>
     </div>
