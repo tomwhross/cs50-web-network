@@ -12,9 +12,9 @@ from .models import POST_MAX_LENGTH, Following, Post, User
 
 
 def index(request):
-    postsposts = Post.objects.all().order_by("-created_on")
+    post_objects = Post.objects.all().order_by("-created_on")
 
-    paginator = Paginator(postsposts, 10)  # show 25 posts per page.
+    paginator = Paginator(post_objects, 10)  # show 10 posts per page.
 
     page_number = request.GET.get("page", 1)
     posts = paginator.get_page(page_number)
@@ -26,6 +26,7 @@ def index(request):
             "posts": posts,
             "num_page_range": range(posts.paginator.num_pages),
             "current_page": page_number,
+            "post_max_length": POST_MAX_LENGTH,
         },
     )
 
@@ -37,9 +38,22 @@ def get_following_posts(request):
     user = User.objects.get(id=request.user.id)
     following = user.following.all()
     following_users = [follow.user for follow in following]
-    posts = Post.objects.filter(user__in=following_users).order_by("-created_on")
 
-    return render(request, "network/following.html", {"posts": posts})
+    post_objects = Post.objects.filter(user__in=following_users).order_by("-created_on")
+    paginator = Paginator(post_objects, 10)  # show 10 posts per page.
+
+    page_number = request.GET.get("page", 1)
+    posts = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "network/following.html",
+        {
+            "posts": posts,
+            "num_page_range": range(posts.paginator.num_pages),
+            "current_page": page_number,
+        },
+    )
 
 
 def login_view(request):
@@ -156,7 +170,11 @@ def get_user(request, user_id):
     numbers_of_followers = followed_user.followers.count()
     number_of_users_followed = user_profile.following.count()
 
-    user_posts = Post.objects.filter(user=user_profile).order_by("-created_on")
+    post_objects = Post.objects.filter(user=user_profile).order_by("-created_on")
+    paginator = Paginator(post_objects, 10)  # show 10 posts per page.
+
+    page_number = request.GET.get("page", 1)
+    posts = paginator.get_page(page_number)
 
     return render(
         request,
@@ -166,7 +184,9 @@ def get_user(request, user_id):
             "following": is_following,
             "number_of_followers": numbers_of_followers,
             "number_of_users_followed": number_of_users_followed,
-            "posts": user_posts,
+            "posts": posts,
+            "num_page_range": range(posts.paginator.num_pages),
+            "current_page": page_number,
         },
     )
 

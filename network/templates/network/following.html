@@ -38,6 +38,34 @@
         {% endfor %}
      </div>
 
+     <div class="pagination justify-content-center" style="margin-top: 20px;">
+        <span class="step-links justify-content-center">
+            <nav aria-label="post pagination">
+                <ul class="pagination justify-content-center">
+                    {% if posts.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page=1">&laquo; first</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ posts.previous_page_number }}">previous</a></li>
+                    {% endif %}
+
+                    {% for page in num_page_range %}
+                        {% if forloop.counter|slugify == current_page|slugify %}
+                            <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}
+                                <span class="sr-only">(current)</span>
+                            </a></li>
+                        {% else %}
+                            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if posts.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ posts.next_page_number }}">next</a></li>
+                        <li class="page-item"><a class="page-link" href="?page={{ posts.paginator.num_pages }}">last</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </span>
+    </div>
+
 {% endblock %}
 
 {% block script %}

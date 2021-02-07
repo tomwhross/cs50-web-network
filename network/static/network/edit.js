@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             characters_remaining = document.querySelector(`#post-chars-remaining-message_${post_id}`);
 
-            characters_remaining.innerHTML = `<b>${240 - edit_post_message.value.length}</b> characters remaining`;
+            characters_remaining.innerHTML = `<b>${post_box.maxLength - edit_post_message.value.length}</b> characters remaining`;
             edit_post_message.onkeyup = function () {
-                characters_remaining.innerHTML = `<b>${240 - edit_post_message.value.length}</b> characters remaining`;
+                characters_remaining.innerHTML = `<b>${post_box.maxLength - edit_post_message.value.length}</b> characters remaining`;
             }
         });
     });

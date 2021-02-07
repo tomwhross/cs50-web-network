@@ -30,11 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
     
-function like_post() {
-  console.log("Like post");
-  console.log(dataset.id);
-}
-
 function getCookie(name) {
   if (!document.cookie) {
     return null;
