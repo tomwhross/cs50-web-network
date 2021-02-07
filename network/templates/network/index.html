@@ -44,7 +44,7 @@
             </div>
             <div class="container border border-secondary rounded-sm post-container" data-edit_container_id="{{ post.id }}" style="display: none;">
                 <div>
-                    <textarea id="text_{{ post.id }}" autofocus required="required" maxlength="240">{{ post.message }}</textarea>
+                    <textarea autofocus id="text_{{ post.id }}" required="required" maxlength="240">{{ post.message }}</textarea>
                 </div>
                 <div>
                     <button data-cancelid="{{ post.id }}" id="cancel-button_{{ post.id }}" type="button" class="btn btn-primary cancel-button">Cancel</button>
@@ -90,5 +90,4 @@
 {% block script %}
     <script src="{% static 'network/like.js' %}"></script>
     <script src="{% static 'network/edit.js' %}"></script>
-    <script src="{% static 'network/post.js' %}"></script> 
 {% endblock %}

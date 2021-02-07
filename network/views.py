@@ -8,17 +8,13 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import Following, Post, User
+from .models import POST_MAX_LENGTH, Following, Post, User
 
 
 def index(request):
     postsposts = Post.objects.all().order_by("-created_on")
 
     paginator = Paginator(postsposts, 10)  # show 25 posts per page.
-
-    # import pdb
-
-    # pdb.set_trace()
 
     page_number = request.GET.get("page", 1)
     posts = paginator.get_page(page_number)
@@ -138,7 +134,7 @@ def post(request, post_id=None):
         if len(data.get("message", "")) <= 0:
             return JsonResponse({"message": "Posts cannot be empty"}, status=406)
 
-        if len(data.get("message")) > 240:
+        if len(data.get("message")) > POST_MAX_LENGTH:
             return JsonResponse(
                 {"message": "Posts cannot be over 240 characters"}, status=406
             )
@@ -148,7 +144,7 @@ def post(request, post_id=None):
 
         return JsonResponse({"saved": True}, status=200)
 
-    return render(request, "network/post.html")
+    return render(request, "network/post.html", {"post_max_length": POST_MAX_LENGTH})
 
 
 def get_user(request, user_id):

@@ -20,7 +20,7 @@
                     <form id="post-form" action="{% url 'post' %}" method="post">
                         {% csrf_token %}
                         <div class="form-group">
-                            <textarea autofocus class="form-control" id="post-message" name="post-message" required="required" maxlength="240" placeholder="Post">{% if post_message %}{{ post_message }}{% endif %}</textarea>
+                            <textarea autofocus class="form-control" id="post-message" name="post-message" required="required" maxlength="{{ post_max_length }}" placeholder="Post">{% if post_message %}{{ post_message }}{% endif %}</textarea>
                             {% if post_id %}
                                 <input type="hidden" id="post_id" name="post_id" value="{{ post_id }}">
                             {% endif %}
@@ -31,7 +31,7 @@
                                     <input type="submit" class="btn btn-primary" value="Post"/>
                                 </div>
                                 <div class="col" id="post-chars-remaining-message" align="right">
-                                    <b>240</b> characters remaining
+                                    <b>{{ post_max_length }}</b> characters remaining
                                 </div>
                             </div>
                         </span>
@@ -40,10 +40,6 @@
             </div>
         </div>
     </div>
-
-
-    {% comment %} Don't have an account? <a href="{% url 'register' %}">Register here.</a> {% endcomment %}
-
 {% endblock %}
 
 {% block script %}

@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
   follow_button = document.querySelector('#follow-user');
   follow_button.addEventListener('click', function() {
-    console.log(`clicked follow on ${this.dataset.userid}`);
 
     fetch(`/follow_user/${this.dataset.userid}`, {
       credentials: 'include',
@@ -16,14 +15,12 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(result => {
       if (result.followed === true) {
-        console.log(`followed: ${result.followed}`);
         follow_button.innerHTML = 'Unfollow user';
         number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
         number_of_followers = number_of_followers + 1;
         document.querySelector('#number_of_followers').innerHTML = number_of_followers;
       }
       else {
-        console.log(`followed: ${result.followed}`);
         follow_button.innerHTML = 'Follow user';
         number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
         number_of_followers = number_of_followers - 1;

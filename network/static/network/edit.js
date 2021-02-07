@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', function() {
             post_container.style.display = 'none';
             edit_container.style.display = 'block';
 
+            post_box = document.querySelector(`#text_${post_id}`);
+            setTimeout(function () {
+                post_box.focus();
+                post_box.setSelectionRange(post_box.value.length, post_box.value.length);
+            }, 0);
+
             characters_remaining = document.querySelector(`#post-chars-remaining-message_${post_id}`);
 
             characters_remaining.innerHTML = `<b>${240 - edit_post_message.value.length}</b> characters remaining`;
