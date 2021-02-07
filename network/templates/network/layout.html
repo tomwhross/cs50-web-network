@@ -22,12 +22,12 @@
               <ul class="navbar-nav mr-auto">
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><strong>{{ request.user.username }}</strong></a>
+                        <a class="nav-link" href="{% url 'get_user' request.user.id %}""><strong>{{ request.user.username }}</strong></a>
                     </li>
                 {% endif %}
-                {% comment %} <li class="nav-item">
+                <li class="nav-item">
                   <a class="nav-link" href="{% url 'index' %}">All Posts</a>
-                </li> {% endcomment %}
+                </li>
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'post' %}">Post</a>
@@ -52,7 +52,7 @@
         
         <div class="body">
             {% block body %}
-            {% endblock %}
+            {% endblock body %}
         </div>
     </body>
 </html>

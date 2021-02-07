@@ -1,33 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
   follow_button = document.querySelector('#follow-user');
-  follow_button.addEventListener('click', function() {
+  if (follow_button != undefined) {
+    follow_button.addEventListener('click', function() {
 
-    fetch(`/follow_user/${this.dataset.userid}`, {
-      credentials: 'include',
-      method: 'POST',
-      mode: 'same-origin',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCookie('csrftoken') 
-      },
-    })
-    .then(response => response.json())
-    .then(result => {
-      if (result.followed === true) {
-        follow_button.innerHTML = 'Unfollow user';
-        number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
-        number_of_followers = number_of_followers + 1;
-        document.querySelector('#number_of_followers').innerHTML = number_of_followers;
-      }
-      else {
-        follow_button.innerHTML = 'Follow user';
-        number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
-        number_of_followers = number_of_followers - 1;
-        document.querySelector('#number_of_followers').innerHTML = number_of_followers; 
-      }
+      fetch(`/follow_user/${this.dataset.userid}`, {
+        credentials: 'include',
+        method: 'POST',
+        mode: 'same-origin',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken') 
+        },
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.followed === true) {
+          follow_button.innerHTML = 'Unfollow user';
+          number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
+          number_of_followers = number_of_followers + 1;
+          document.querySelector('#number_of_followers').innerHTML = number_of_followers;
+        }
+        else {
+          follow_button.innerHTML = 'Follow user';
+          number_of_followers = parseInt(document.querySelector('#number_of_followers').innerHTML);
+          number_of_followers = number_of_followers - 1;
+          document.querySelector('#number_of_followers').innerHTML = number_of_followers; 
+        }
+      });
     });
-  });
+  }
 });
     
 function getCookie(name) {

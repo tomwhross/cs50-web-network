@@ -135,6 +135,7 @@ def post(request, post_id=None):
             user_post = Post.objects.create(
                 user=user, message=request.POST["post-message"]
             )
+            user_post.likes.add(user)
             user_post.save()
 
             return HttpResponseRedirect(reverse("index"))
@@ -187,6 +188,7 @@ def get_user(request, user_id):
             "posts": posts,
             "num_page_range": range(posts.paginator.num_pages),
             "current_page": page_number,
+            "post_max_length": POST_MAX_LENGTH,
         },
     )
 
